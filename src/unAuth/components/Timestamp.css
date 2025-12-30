@@ -1,0 +1,30 @@
+.timestamp {
+  padding: 2rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin: 2rem auto;
+  max-width: 600px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.timestamp-container {
+  text-align: center;
+}
+
+.timestamp-label {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timestamp-value {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
