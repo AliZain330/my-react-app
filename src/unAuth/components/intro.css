@@ -1,10 +1,11 @@
 .intro {
-  padding: 4rem 2rem;
-  background-color: #fff;
-  margin: 2rem auto;
+  padding: 2rem 2rem 4rem 2rem;
+  background-color: transparent;
+  margin: 0 auto;
   max-width: 1400px;
   width: 100%;
   box-sizing: border-box;
+  font-family: Arial, sans-serif;
 }
 
 .intro-container {
@@ -18,6 +19,7 @@
 .intro-content {
   flex: 1;
   max-width: 600px;
+  text-align: left;
 }
 
 .intro-header {
@@ -27,6 +29,7 @@
   letter-spacing: 1px;
   text-transform: uppercase;
   margin-bottom: 1.5rem;
+  font-family: Arial, sans-serif;
 }
 
 .intro-title {
@@ -36,6 +39,7 @@
   line-height: 1.1;
   margin: 0 0 1.5rem 0;
   letter-spacing: -1px;
+  font-family: Arial, sans-serif;
 }
 
 .intro-description {
@@ -43,6 +47,7 @@
   font-size: 1.25rem;
   margin: 0 0 2.5rem 0;
   line-height: 1.6;
+  font-family: Arial, sans-serif;
 }
 
 .intro-buttons {
@@ -63,18 +68,7 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   position: relative;
-}
-
-.intro-button-primary::after {
-  content: '';
-  position: absolute;
-  top: -1.5px;
-  left: -1.5px;
-  right: -1.5px;
-  bottom: -1.5px;
-  background: linear-gradient(135deg, #ffd700 0%, #00ff00 25%, #00bfff 50%, #8a2be2 75%, #ff1493 100%);
-  border-radius: 8px;
-  z-index: -1;
+  font-family: Arial, sans-serif;
 }
 
 .intro-button-primary:hover {
@@ -94,6 +88,7 @@
   transition: all 0.3s ease;
   white-space: nowrap;
   position: relative;
+  font-family: Arial, sans-serif;
 }
 
 .intro-button-secondary::after {
@@ -136,8 +131,8 @@
 
 .intro-badge {
   position: absolute;
-  top: -10px;
-  left: -10px;
+  top: -20px;
+  left: 0;
   background: white;
   padding: 0.75rem 1.25rem;
   border-radius: 8px;
@@ -155,8 +150,9 @@
 
 .badge-text {
   color: #4b5563;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
   font-weight: 600;
+  font-family: Arial, sans-serif;
 }
 
 @media (max-width: 1024px) {
@@ -167,7 +163,7 @@
   
   .intro-content {
     max-width: 100%;
-    text-align: center;
+    text-align: left;
   }
   
   .intro-title {
@@ -208,8 +204,8 @@
   }
   
   .intro-badge {
-    top: 10px;
-    left: 10px;
+    top: -20px;
+    left: 0;
   }
 }
 

@@ -8,8 +8,7 @@
     linear-gradient(rgba(147, 112, 219, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
+  margin: 0;
   box-sizing: border-box;
   padding-top: 120px;
   position: relative;
@@ -41,13 +40,11 @@
 .landing-content {
   flex: 1;
   text-align: center;
-  background: white;
-  padding: 60px 40px;
-  margin: 20px auto;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  width: calc(100% - 40px);
-  max-width: calc(1200px - 40px);
+  background: transparent;
+  padding: 0 2rem;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1400px;
   box-sizing: border-box;
 }
 
