@@ -17,7 +17,7 @@ function Intro() {
             Paste a link and get timestamps, key takeaways, and searchable moments in seconds.
           </p>
           <div className="intro-buttons">
-            <button className="intro-button-primary">Talk with our team</button>
+            <button className="intro-button-primary">See a demo</button>
             <button className="intro-button-secondary">Get started</button>
           </div>
         </div>
