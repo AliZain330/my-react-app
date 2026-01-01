@@ -1,23 +1,55 @@
 .navbar {
-  background-color: #333;
-  padding: 1rem 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1.5rem 2rem;
   width: 100%;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
 }
 
 .navbar-container {
-  max-width: 1200px;
+  max-width: 1400px;
+  width: 100%;
   margin: 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 2rem;
+  gap: 2rem;
+  background: white;
+  padding: 1rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-logo {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.logo-image {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  color: #000;
+  font-size: 1.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.5px;
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
 }
 
 .navbar-menu {
@@ -25,16 +57,119 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 2rem;
+  gap: 3rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .navbar-item {
-  color: white;
+  color: #000;
   cursor: pointer;
   transition: color 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .navbar-item:hover {
-  color: #667eea;
+  color: #555;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.navbar-button-login {
+  background: white;
+  color: #000;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+  box-shadow: 0 0 0 1.5px transparent;
+}
+
+.navbar-button-login::after {
+  content: '';
+  position: absolute;
+  top: -1.5px;
+  left: -1.5px;
+  right: -1.5px;
+  bottom: -1.5px;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.navbar-button-login:hover {
+  background: rgba(118, 75, 162, 0.05);
+}
+
+.navbar-button-contact {
+  background: #1a1a1a;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  position: relative;
+}
+
+.navbar-button-contact::after {
+  content: '';
+  position: absolute;
+  top: -1.5px;
+  left: -1.5px;
+  right: -1.5px;
+  bottom: -1.5px;
+  background: linear-gradient(135deg, #ffd700 0%, #00ff00 25%, #00bfff 50%, #8a2be2 75%, #ff1493 100%);
+  border-radius: 8px;
+  z-index: -1;
+}
+
+.navbar-button-contact:hover {
+  background: #2a2a2a;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 1rem;
+  }
+  
+  .navbar-container {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .navbar-center {
+    order: 3;
+    width: 100%;
+  }
+  
+  .navbar-menu {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+  
+  .navbar-actions {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
