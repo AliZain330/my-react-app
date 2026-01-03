@@ -1,7 +1,7 @@
 .timestamp {
-  padding: 2rem;
+  padding: 1rem 2rem;
   background-color: transparent;
-  margin: 2rem auto;
+  margin: 1rem auto;
   max-width: 1400px;
   width: 100%;
   box-sizing: border-box;
@@ -133,26 +133,32 @@
 
 @media (max-width: 768px) {
   .timestamp {
-    padding: 1.5rem;
-    margin: 1rem auto;
+    padding: 0.75rem 1rem;
+    margin: 0.5rem auto;
   }
   
   .timestamp-container {
-    padding: 2rem 1.5rem;
+    padding: 1.5rem 1rem;
   }
   
   .timestamp-heading {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    margin: 0 0 1rem 0;
   }
   
   .timestamp-input {
-    padding: 0.875rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.75rem 0.875rem;
+    font-size: 0.875rem;
   }
   
   .timestamp-button {
     width: 100%;
-    padding: 1rem;
+    padding: 0.875rem;
+    font-size: 0.875rem;
+  }
+
+  .timestamp-error {
+    font-size: 0.75rem;
   }
 
   .timestamp-video-preview {
@@ -165,8 +171,9 @@
   }
 
   .timestamp-video-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     padding: 0 0.5rem;
+    line-height: 1.4;
   }
 }
 

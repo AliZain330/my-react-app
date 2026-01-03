@@ -24,10 +24,6 @@ function Intro() {
         <div className="intro-visual">
           <div className="intro-image-wrapper">
             <img src={youtubeImage} alt="YouTube video" className="intro-image" />
-            <div className="intro-badge">
-              <span className="badge-icon">⚡</span>
-              <span className="badge-text">Chapters in seconds</span>
-            </div>
           </div>
         </div>
       </div>

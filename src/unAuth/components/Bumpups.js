@@ -13,15 +13,15 @@ function Bumpups() {
           Process your videos to deliver insights across all industries. Ask questions, request summaries, analyses and more with Bump-1.0
         </p>
         <div className="bumpups-grid">
-          <div className="bumpup-item">
+          <a href="https://bumpups.com/" target="_blank" rel="noopener noreferrer" className="bumpup-item">
             <img src={image1} alt="Bumpup 1" className="bumpup-image" />
-          </div>
-          <div className="bumpup-item">
+          </a>
+          <a href="https://bumpups.com/" target="_blank" rel="noopener noreferrer" className="bumpup-item">
             <img src={image2} alt="Bumpup 2" className="bumpup-image" />
-          </div>
-          <div className="bumpup-item">
+          </a>
+          <a href="https://bumpups.com/" target="_blank" rel="noopener noreferrer" className="bumpup-item">
             <img src={image3} alt="Bumpup 3" className="bumpup-image" />
-          </div>
+          </a>
         </div>
       </div>
     </section>
