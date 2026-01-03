@@ -1,0 +1,251 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 0.25rem 2rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  background: white;
+  padding: 0.5rem 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.logo-image {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-text {
+  color: #000;
+  font-size: 1.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.5px;
+}
+
+.navbar-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-menu {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 3rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-item {
+  color: #000;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.navbar-item:hover {
+  color: #555;
+}
+
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  background: #1e3a8a;
+  padding: 0.5rem;
+  border-radius: 12px;
+  margin-left: auto;
+}
+
+.navbar-button-login {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.navbar-button-login:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-button-contact {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.navbar-button-contact:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 0.25rem 1.5rem;
+  }
+  
+  .navbar-container {
+    padding: 0.5rem 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .navbar-center {
+    display: none;
+  }
+  
+  .logo-image {
+    height: 40px;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-item {
+    font-size: 0.9rem;
+  }
+  
+  .navbar-actions {
+    gap: 0.5rem;
+    padding: 0.4rem;
+  }
+  
+  .navbar-button-login,
+  .navbar-button-contact {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .navbar {
+    position: static;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .navbar-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .navbar-logo {
+    position: static;
+    transform: none;
+    margin: 0;
+    gap: 0.5rem;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo-image {
+    height: 32px;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .navbar-center {
+    display: flex;
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .navbar-menu {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-item {
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  
+  .navbar-actions {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin: 0 auto;
+    display: flex;
+  }
+  
+  .navbar-button-login,
+  .navbar-button-contact {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+  }
+}
+
