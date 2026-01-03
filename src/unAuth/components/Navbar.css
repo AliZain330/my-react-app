@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 1000;
-  padding: 1.5rem 2rem;
+  padding: 0.25rem 2rem;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -20,7 +20,7 @@
   align-items: center;
   gap: 2rem;
   background: white;
-  padding: 1rem 2rem;
+  padding: 0.5rem 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
@@ -78,43 +78,16 @@
 .navbar-actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   flex-shrink: 0;
+  background: #1e3a8a;
+  padding: 0.5rem;
+  border-radius: 12px;
+  margin-left: auto;
 }
 
 .navbar-button-login {
-  background: white;
-  color: #000;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  position: relative;
-  box-shadow: 0 0 0 1.5px transparent;
-}
-
-.navbar-button-login::after {
-  content: '';
-  position: absolute;
-  top: -1.5px;
-  left: -1.5px;
-  right: -1.5px;
-  bottom: -1.5px;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  border-radius: 8px;
-  z-index: -1;
-}
-
-.navbar-button-login:hover {
-  background: rgba(118, 75, 162, 0.05);
-}
-
-.navbar-button-contact {
-  background: #1a1a1a;
+  background: transparent;
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -124,52 +97,155 @@
   font-weight: 600;
   transition: all 0.3s ease;
   white-space: nowrap;
-  position: relative;
 }
 
-.navbar-button-contact::after {
-  content: '';
-  position: absolute;
-  top: -1.5px;
-  left: -1.5px;
-  right: -1.5px;
-  bottom: -1.5px;
-  background: linear-gradient(135deg, #ffd700 0%, #00ff00 25%, #00bfff 50%, #8a2be2 75%, #ff1493 100%);
+.navbar-button-login:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-button-contact {
+  background: transparent;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
   border-radius: 8px;
-  z-index: -1;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .navbar-button-contact:hover {
-  background: #2a2a2a;
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.1);
 }
 
-@media (max-width: 768px) {
+/* Tablet styles */
+@media (max-width: 1024px) {
   .navbar {
-    padding: 1rem;
+    padding: 0.25rem 1.5rem;
   }
   
   .navbar-container {
-    flex-wrap: wrap;
-    gap: 1rem;
-    padding: 1rem;
+    padding: 0.5rem 1.5rem;
+    gap: 1.5rem;
+  }
+  
+  .navbar-logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
   
   .navbar-center {
-    order: 3;
+    display: none;
+  }
+  
+  .logo-image {
+    height: 40px;
+  }
+  
+  .logo-text {
+    font-size: 1.5rem;
+  }
+  
+  .navbar-item {
+    font-size: 0.9rem;
+  }
+  
+  .navbar-actions {
+    gap: 0.5rem;
+    padding: 0.4rem;
+  }
+  
+  .navbar-button-login,
+  .navbar-button-contact {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  .navbar {
+    position: static;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .navbar-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    position: relative;
     width: 100%;
+    max-width: 100%;
+  }
+  
+  .navbar-logo {
+    position: static;
+    transform: none;
+    margin: 0;
+    gap: 0.5rem;
+    width: auto;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .logo-image {
+    height: 32px;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .navbar-center {
+    display: flex;
+    order: 2;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
   }
   
   .navbar-menu {
     width: 100%;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 1.5rem;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar-item {
+    font-size: 0.85rem;
+    text-align: center;
   }
   
   .navbar-actions {
     width: 100%;
+    max-width: 320px;
     justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    margin: 0 auto;
+    display: flex;
+  }
+  
+  .navbar-button-login,
+  .navbar-button-contact {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    flex: 1;
+    min-width: 0;
+    text-align: center;
   }
 }
 

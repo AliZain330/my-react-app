@@ -10,8 +10,14 @@
   width: 100%;
   margin: 0;
   box-sizing: border-box;
-  padding-top: 120px;
+  padding-top: 80px;
   position: relative;
+}
+
+@media (max-width: 768px) {
+  .landing-page {
+    padding-top: 0;
+  }
 }
 
 .landing-page::before {
@@ -62,8 +68,8 @@
   }
   
   .landing-content {
-    padding: 40px 30px;
-    margin: 10px auto;
+    padding: 20px 30px;
+    margin: 0 auto;
     width: calc(100% - 20px);
   }
 }
