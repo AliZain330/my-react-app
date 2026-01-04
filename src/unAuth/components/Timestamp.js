@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../../firebase';
 import './Timestamp.css';
 
 function Timestamp() {
@@ -6,6 +8,8 @@ function Timestamp() {
   const [error, setError] = useState('');
   const [videoData, setVideoData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [timestamps, setTimestamps] = useState(null);
+  const [generatingTimestamps, setGeneratingTimestamps] = useState(false);
 
   // YouTube URL validation regex
   const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/|m\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})(\S*)?$/;
@@ -98,9 +102,12 @@ function Timestamp() {
     if (error && inputUrl.trim()) {
       setError('');
     }
-    // Clear video data when URL changes
+    // Clear video data and timestamps when URL changes
     if (videoData) {
       setVideoData(null);
+    }
+    if (timestamps) {
+      setTimestamps(null);
     }
   };
 
@@ -108,14 +115,19 @@ function Timestamp() {
     if (!url.trim()) {
       setError('Please enter a YouTube URL');
       setVideoData(null);
+      setTimestamps(null);
       return;
     }
 
     if (!validateYouTubeUrl(url)) {
       setError('Please enter a valid YouTube URL');
       setVideoData(null);
+      setTimestamps(null);
       return;
     }
+
+    // Clear previous timestamps
+    setTimestamps(null);
 
     // Extract video ID and fetch video data
     const videoId = extractVideoId(url);
@@ -124,12 +136,40 @@ function Timestamp() {
     } else {
       setError('Could not extract video ID from URL');
       setVideoData(null);
+      setTimestamps(null);
     }
   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       handleProceed();
+    }
+  };
+
+  const handleGenerateTimestamps = async () => {
+    if (!url.trim() || !videoData) {
+      setError('Please enter a valid YouTube URL first');
+      return;
+    }
+
+    setGeneratingTimestamps(true);
+    setError('');
+
+    try {
+      const getTimestamps = httpsCallable(functions, 'get_timestamps');
+      const result = await getTimestamps({ url: url });
+      
+      if (result.data && result.data.success) {
+        setTimestamps(result.data.data);
+      } else {
+        setError('Failed to generate timestamps. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error generating timestamps:', err);
+      const errorMessage = err.message || 'Failed to generate timestamps. Please try again.';
+      setError(errorMessage);
+    } finally {
+      setGeneratingTimestamps(false);
     }
   };
 
@@ -163,6 +203,20 @@ function Timestamp() {
               className="timestamp-video-thumbnail"
             />
             <h3 className="timestamp-video-title">{videoData.title}</h3>
+            <button 
+              className="timestamp-button" 
+              onClick={handleGenerateTimestamps} 
+              disabled={generatingTimestamps}
+            >
+              {generatingTimestamps ? 'Generating...' : 'Generate Timestamps'}
+            </button>
+          </div>
+        )}
+        
+        {timestamps && (
+          <div className="timestamp-results">
+            <h3>Timestamps</h3>
+            <pre>{JSON.stringify(timestamps, null, 2)}</pre>
           </div>
         )}
       </div>
