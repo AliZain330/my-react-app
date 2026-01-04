@@ -1,0 +1,60 @@
+[debug] [2026-01-04T09:54:55.590Z] ----------------------------------------------------------------------
+[debug] [2026-01-04T09:54:55.592Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Dell\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy --only functions --debug
+[debug] [2026-01-04T09:54:55.593Z] CLI Version:   15.1.0
+[debug] [2026-01-04T09:54:55.593Z] Platform:      win32
+[debug] [2026-01-04T09:54:55.593Z] Node Version:  v24.12.0
+[debug] [2026-01-04T09:54:55.593Z] Time:          Sun Jan 04 2026 14:54:55 GMT+0500 (Pakistan Standard Time)
+[debug] [2026-01-04T09:54:55.593Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-04T09:54:57.099Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-04T09:54:57.100Z] > authorizing via signed-in user (alizainanwar468@gmail.com)
+[debug] [2026-01-04T09:54:57.100Z] [iam] checking project my-react-app-899b1 for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-01-04T09:54:57.101Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:57.101Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:57.102Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1:testIamPermissions [none]
+[debug] [2026-01-04T09:54:57.102Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1:testIamPermissions x-goog-quota-user=projects/my-react-app-899b1
+[debug] [2026-01-04T09:54:57.102Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-01-04T09:54:58.531Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1:testIamPermissions 200
+[debug] [2026-01-04T09:54:58.532Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-01-04T09:54:58.532Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:58.532Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:58.532Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/my-react-app-899b1/serviceAccounts/my-react-app-899b1@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-01-04T09:54:58.533Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/my-react-app-899b1/serviceAccounts/my-react-app-899b1@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-01-04T09:54:59.934Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/my-react-app-899b1/serviceAccounts/my-react-app-899b1@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-01-04T09:54:59.934Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/my-react-app-899b1/serviceAccounts/my-react-app-899b1@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[info] 
+[info] === Deploying to 'my-react-app-899b1'...
+[info] 
+[info] i  deploying functions 
+[debug] [2026-01-04T09:54:59.937Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:59.937Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:54:59.937Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1 [none]
+[debug] [2026-01-04T09:55:00.248Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1 200
+[debug] [2026-01-04T09:55:00.248Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/my-react-app-899b1 {"projectNumber":"62001121688","projectId":"my-react-app-899b1","lifecycleState":"ACTIVE","name":"my-react-app","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2025-12-28T13:18:33.952156Z"}
+[info] i  functions: preparing codebase default for deployment 
+[info] i  functions: ensuring required API cloudfunctions.googleapis.com is enabled... 
+[info] i  functions: ensuring required API cloudbuild.googleapis.com is enabled... 
+[info] i  artifactregistry: ensuring required API artifactregistry.googleapis.com is enabled... 
+[debug] [2026-01-04T09:55:00.251Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:55:00.251Z] Checked if tokens are valid: true, expires at: 1767522558089
+[debug] [2026-01-04T09:55:00.251Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/my-react-app-899b1/adminSdkConfig [none]
+[debug] [2026-01-04T09:55:00.768Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/my-react-app-899b1/adminSdkConfig 200
+[debug] [2026-01-04T09:55:00.768Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/my-react-app-899b1/adminSdkConfig {"projectId":"my-react-app-899b1","storageBucket":"my-react-app-899b1.firebasestorage.app"}
+[debug] [2026-01-04T09:55:00.769Z] Customer code is not Node
+[debug] [2026-01-04T09:55:00.770Z] Validating python source
+[debug] [2026-01-04T09:55:00.770Z] Building python source
+[info] i  functions: Loading and analyzing source code for codebase default to determine what to deploy 
+[debug] [2026-01-04T09:55:00.771Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-01-04T09:55:00.780Z] Running command with virtualenv: command="C:\Users\Dell\OneDrive - The University of Hong Kong - Connect\Desktop\Documents\my-react-app\functions\venv\Scripts\activate.bat", args=["","&&","python.exe","-c","\"import firebase_functions; import os; print(os.path.dirname(firebase_functions.__file__))\""]
+[debug] [2026-01-04T09:55:00.916Z] stdout: C:\Users\Dell\OneDrive - The University of Hong Kong - Connect\Desktop\Documents\my-react-app\functions\venv\Lib\site-packages\firebase_functions
+
+[debug] [2026-01-04T09:55:00.926Z] Running admin server with args: ["python.exe","\"C:\\Users\\Dell\\OneDrive - The University of Hong Kong - Connect\\Desktop\\Documents\\my-react-app\\functions\\venv\\Lib\\site-packages\\firebase_functions\\private\\serving.py\""] and env: {"FIREBASE_CONFIG":"{\"projectId\":\"my-react-app-899b1\",\"storageBucket\":\"my-react-app-899b1.firebasestorage.app\"}","GCLOUD_PROJECT":"my-react-app-899b1","GOOGLE_CLOUD_QUOTA_PROJECT":"my-react-app-899b1","ADMIN_PORT":"8081"} in C:\Users\Dell\OneDrive - The University of Hong Kong - Connect\Desktop\Documents\my-react-app\functions
+[debug] [2026-01-04T09:55:00.926Z] Running command with virtualenv: command="C:\Users\Dell\OneDrive - The University of Hong Kong - Connect\Desktop\Documents\my-react-app\functions\venv\Scripts\activate.bat", args=["","&&","python.exe","\"C:\\Users\\Dell\\OneDrive - The University of Hong Kong - Connect\\Desktop\\Documents\\my-react-app\\functions\\venv\\Lib\\site-packages\\firebase_functions\\private\\serving.py\""]
+[info]  * Serving Flask app 'serving'
+ * Debug mode: off
+
+[error] WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:8081
+
+[error] Press CTRL+C to quit
+
