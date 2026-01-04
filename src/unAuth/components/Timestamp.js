@@ -173,6 +173,49 @@ function Timestamp() {
     }
   };
 
+  // Parse and filter timestamps to show only from 0:00 to "video tutorial"
+  const getFilteredTimestamps = () => {
+    if (!timestamps || !timestamps.timestamps_list) {
+      return [];
+    }
+
+    const timestampList = timestamps.timestamps_list;
+    const filtered = [];
+    let foundVideoTutorial = false;
+
+    for (const timestamp of timestampList) {
+      // Stop when we find "video tutorial" (case insensitive)
+      if (timestamp.toLowerCase().includes('video tutorial')) {
+        filtered.push(timestamp);
+        foundVideoTutorial = true;
+        break;
+      }
+      filtered.push(timestamp);
+    }
+
+    return filtered;
+  };
+
+  // Convert timestamp string to YouTube URL with time parameter
+  const createTimestampUrl = (timestampString) => {
+    if (!url || !videoData) return url;
+    
+    // Extract time from timestamp string (e.g., "0:00 - Introduction" -> "0:00")
+    const timeMatch = timestampString.match(/^(\d+:\d+)/);
+    if (!timeMatch) return url;
+
+    const time = timeMatch[1];
+    const [minutes, seconds] = time.split(':').map(Number);
+    const totalSeconds = minutes * 60 + seconds;
+
+    // Add or update the t parameter in the URL
+    const videoId = extractVideoId(url);
+    if (videoId) {
+      return `https://www.youtube.com/watch?v=${videoId}&t=${totalSeconds}s`;
+    }
+    return url;
+  };
+
   return (
     <div className="timestamp">
       <div className="timestamp-container">
@@ -204,7 +247,7 @@ function Timestamp() {
             />
             <h3 className="timestamp-video-title">{videoData.title}</h3>
             <button 
-              className="timestamp-button" 
+              className="timestamp-button timestamp-generate-button" 
               onClick={handleGenerateTimestamps} 
               disabled={generatingTimestamps}
             >
@@ -215,8 +258,23 @@ function Timestamp() {
         
         {timestamps && (
           <div className="timestamp-results">
-            <h3>Timestamps</h3>
-            <pre>{JSON.stringify(timestamps, null, 2)}</pre>
+            <h3 className="timestamp-results-heading">Timestamps</h3>
+            <div className="timestamp-list">
+              {getFilteredTimestamps().map((timestamp, index) => {
+                const timestampUrl = createTimestampUrl(timestamp);
+                return (
+                  <a
+                    key={index}
+                    href={timestampUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="timestamp-link"
+                  >
+                    {timestamp}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

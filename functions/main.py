@@ -6,6 +6,7 @@ from firebase_functions import https_fn  # type: ignore
 from firebase_functions.options import set_global_options  # type: ignore
 from firebase_admin import initialize_app  # type: ignore
 import httpx  # type: ignore
+import os
 
 # For cost control, you can set the maximum number of containers that can be
 # running at the same time. This helps mitigate the impact of unexpected
@@ -28,8 +29,15 @@ def get_timestamps(req: https_fn.CallableRequest) -> dict:
         "url": "https://www.youtube.com/watch?v=..."
     }
     """
-    # Bumpups API key
-    api_key = "bumpups-vouOtPSqaVRKLbjmNOOGXnMImE23261QAUNNcdfokJ8xQ6b2bU0WKGu0Ln-QCCqGjS0Q-27o38VulFjfPQyHJwUofB8j5Fw7a4iGazfuiGfGIBRYhbbiYbVNXFaRZCmf2RTjm90ZUx4bMZqwAXai2AuviInkg2VDhg"
+    # Bumpups API key - get from environment variable
+    # For Python Firebase Functions, config values set via firebase functions:config:set
+    # are available as environment variables. The config "bumpups.api_key" should be
+    # available, but we'll check multiple possible formats
+    api_key = (
+        os.environ.get("BUMPUPS_API_KEY") or  # Direct env var
+        os.environ.get("bumpups_api_key") or  # Config format (dots to underscores, lowercase)
+        "bumpups-vouOtPSqaVRKLbjmNOOGXnMImE23261QAUNNcdfokJ8xQ6b2bU0WKGu0Ln-QCCqGjS0Q-27o38VulFjfPQyHJwUofB8j5Fw7a4iGazfuiGfGIBRYhbbiYbVNXFaRZCmf2RTjm90ZUx4bMZqwAXai2AuviInkg2VDhg"  # Fallback
+    )
     
     # Get YouTube URL from request
     if not req.data or "url" not in req.data:
