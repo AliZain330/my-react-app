@@ -17,8 +17,12 @@ function Intro() {
             Paste a link and get timestamps, key takeaways, and searchable moments in seconds.
           </p>
           <div className="intro-buttons">
-            <button className="intro-button-primary">See a demo</button>
-            <button className="intro-button-secondary">Get started</button>
+            <button className="intro-button-secondary" onClick={() => {
+              const timestampSection = document.getElementById('timestamp-section');
+              if (timestampSection) {
+                timestampSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }}>Get started</button>
           </div>
         </div>
         <div className="intro-visual">
