@@ -3,8 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
-// Firestore import (commented out until Java is installed for emulator)
-// import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -47,7 +46,7 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize services
 const auth = getAuth(app);
-// const db = getFirestore(app); // Uncomment when Firestore emulator is needed
+const db = getFirestore(app);
 const functions = getFunctions(app);
 
 // Connect to emulators in development mode
@@ -63,17 +62,27 @@ if (useEmulator) {
     // Connect to Functions Emulator
     connectFunctionsEmulator(functions, "localhost", 5001);
     
-    // Firestore Emulator (requires Java - uncomment when Java is installed)
-    // connectFirestoreEmulator(db, "localhost", 8080);
-    
-    console.log("🔥 Firebase Emulators connected!");
-    console.log("   - Auth: http://localhost:9099");
-    console.log("   - Functions: localhost:5001");
-    console.log("   - Firestore: (requires Java - not connected)");
+    // Connect to Firestore Emulator (requires Java - comment out if not using emulator)
+    try {
+      connectFirestoreEmulator(db, "localhost", 8080);
+      console.log("🔥 Firebase Emulators connected!");
+      console.log("   - Auth: http://localhost:9099");
+      console.log("   - Functions: localhost:5001");
+      console.log("   - Firestore: localhost:8080");
+    } catch (firestoreError) {
+      // Firestore emulator not running, use production Firestore
+      console.log("🔥 Firebase Emulators connected!");
+      console.log("   - Auth: http://localhost:9099");
+      console.log("   - Functions: localhost:5001");
+      console.log("   - Firestore: Using production database (emulator not available)");
+    }
   } catch (error) {
     // Emulators already connected or error connecting
     console.warn("⚠️ Firebase Emulator connection warning:", error.message);
   }
+} else {
+  console.log("🔥 Firebase initialized (production mode)");
+  console.log("   - Firestore: Connected to production database");
 }
 
 // Initialize Analytics (only in production)
@@ -83,5 +92,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Export services
-export { app, auth, functions, analytics };
-// export { db }; // Uncomment when Firestore is needed
+export { app, auth, functions, analytics, db };
