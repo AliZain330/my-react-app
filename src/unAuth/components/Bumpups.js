@@ -6,7 +6,7 @@ import image3 from '../../assets/bumpup3.png';
 
 function Bumpups() {
   return (
-    <section className="bumpups">
+    <section className="bumpups" id="bumpups-section">
       <div className="bumpups-container">
         <h2 className="bumpups-heading">Do more with bumups.com</h2>
         <p className="bumpups-description">
