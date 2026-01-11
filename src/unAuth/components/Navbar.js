@@ -3,6 +3,15 @@ import './Navbar.css';
 import logo from '../../assets/logo.png';
 
 function Navbar() {
+  const scrollToSection = (sectionId) => {
+    const section = document.getElementById(sectionId);
+    if (section) {
+      // For history section, center it; for others, use start
+      const blockValue = sectionId === 'history-section' ? 'center' : 'start';
+      section.scrollIntoView({ behavior: 'smooth', block: blockValue });
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -12,14 +21,14 @@ function Navbar() {
         </div>
         <div className="navbar-center">
           <ul className="navbar-menu">
-            <li className="navbar-item">Features</li>
-            <li className="navbar-item">Pricing</li>
-            <li className="navbar-item">Contact us</li>
+            <li className="navbar-item" onClick={() => scrollToSection('bumpups-section')}>Features</li>
+            <li className="navbar-item" onClick={() => scrollToSection('history-section')}>Examples</li>
+            <li className="navbar-item" onClick={() => scrollToSection('footer-section')}>Contact us</li>
           </ul>
         </div>
         <div className="navbar-actions">
           <button className="navbar-button-login">Log in</button>
-          <button className="navbar-button-contact">Try it free</button>
+          <button className="navbar-button-contact">Sign up</button>
         </div>
       </div>
     </nav>

@@ -1,0 +1,247 @@
+.enter-component {
+  width: 100%;
+  font-family: Arial, sans-serif;
+}
+
+.enter-heading {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  font-family: Arial, sans-serif;
+}
+
+.enter-input-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.enter-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.enter-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  padding-right: 180px; /* Space for button */
+  font-size: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  transition: border-color 0.3s ease;
+  background-color: white;
+}
+
+.enter-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.enter-input-error {
+  border-color: #ef4444;
+}
+
+.enter-input::placeholder {
+  color: #9ca3af;
+}
+
+.enter-button-container {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.enter-button {
+  background: white;
+  color: #1e3a8a;
+  border: 2px solid #1e3a8a;
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.enter-button-icon {
+  font-size: 0.9rem;
+  transition: none;
+  display: inline-block;
+}
+
+.enter-button-icon.hammer-animating {
+  animation: hammerMove 0.6s ease-in-out infinite;
+}
+
+@keyframes hammerMove {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.enter-button:hover:not(:disabled) {
+  background: #1e3a8a;
+  color: white;
+}
+
+.enter-button:active:not(:disabled) {
+  transform: none;
+}
+
+.enter-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.enter-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+  font-family: Arial, sans-serif;
+}
+
+.enter-video-preview {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.enter-video-preview-placeholder,
+.enter-video-preview-loading {
+  width: 100%;
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.enter-placeholder-thumbnail {
+  width: 100%;
+  max-width: 640px;
+  aspect-ratio: 16 / 9;
+  background-color: #e5e7eb;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.enter-placeholder-youtube-icon {
+  width: 80px;
+  height: 60px;
+  color: #9ca3af;
+  opacity: 0.6;
+}
+
+.enter-placeholder-title {
+  width: 100%;
+  max-width: 640px;
+  height: 60px;
+  background-color: #d1d5db;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+.enter-loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #9ca3af;
+  border-top-color: #1e3a8a;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.enter-video-thumbnail {
+  max-width: 100%;
+  width: 100%;
+  max-width: 640px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1rem;
+  object-fit: contain;
+}
+
+.enter-video-title {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0 1rem;
+  font-family: Arial, sans-serif;
+  line-height: 1.5;
+  max-width: 640px;
+  word-wrap: break-word;
+}
+
+@media (max-width: 768px) {
+  .enter-heading {
+    font-size: 2rem;
+    margin: 0 0 1rem 0;
+  }
+  
+  .enter-input {
+    padding: 0.75rem 0.875rem;
+    padding-right: 120px; /* Smaller space for button on mobile */
+    font-size: 0.875rem;
+  }
+
+  .enter-button {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .enter-error {
+    font-size: 0.75rem;
+  }
+
+  .enter-video-preview {
+    margin-top: 1.5rem;
+  }
+
+  .enter-video-thumbnail {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+
+  .enter-video-title {
+    font-size: 0.95rem;
+    padding: 0 0.5rem;
+    line-height: 1.4;
+  }
+}
+

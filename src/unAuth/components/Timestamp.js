@@ -1,171 +1,188 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { httpsCallable } from 'firebase/functions';
+import { functions } from '../../firebase';
+import Enter from './Timestamp.comp/enter';
+import Times from './Timestamp.comp/times';
+import History from './Timestamp.comp/history';
+import { loadFromFirestore, addToHistory as addToFirestoreHistory } from './Timestamp.comp/firestoreStorage';
 import './Timestamp.css';
 
 function Timestamp() {
   const [url, setUrl] = useState('');
-  const [error, setError] = useState('');
   const [videoData, setVideoData] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [timestamps, setTimestamps] = useState(null);
+  const [generatingTimestamps, setGeneratingTimestamps] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [enterKey, setEnterKey] = useState(0); // Key to force reset of Enter component
+  const [newItemAdded, setNewItemAdded] = useState(false);
 
-  // YouTube URL validation regex
-  const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/|v\/)|youtu\.be\/|m\.youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})(\S*)?$/;
-
-  const validateYouTubeUrl = (urlString) => {
-    if (!urlString.trim()) {
-      return false;
-    }
-    return youtubeRegex.test(urlString);
-  };
+  // Load history from Firestore on component mount
+  useEffect(() => {
+    const loadHistoryData = async () => {
+      try {
+        const savedHistory = await loadFromFirestore();
+        if (savedHistory.length > 0) {
+          setHistory(savedHistory);
+        }
+      } catch (error) {
+        console.error('Error loading history:', error);
+      }
+    };
+    loadHistoryData();
+  }, []);
 
   const extractVideoId = (urlString) => {
     const match = urlString.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
     return match ? match[1] : null;
   };
 
-  const fetchVideoData = async (videoId) => {
-    const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
-    if (!apiKey) {
-      setError('YouTube API key is not configured. Please check your .env file.');
-      setLoading(false);
+  const handleVideoDataChange = (newVideoData) => {
+    setVideoData(newVideoData);
+    // Clear timestamps when video data changes
+    if (!newVideoData && timestamps) {
+      setTimestamps(null);
+    }
+  };
+
+  const handleGenerateTimestamps = async (videoUrl) => {
+    if (!videoUrl || !videoData) {
       return;
     }
 
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`
+    // Extract video ID to check if it's already in history
+    const videoId = extractVideoId(videoUrl);
+    if (videoId) {
+      // Check if this video already exists in history
+      const existingItem = history.find(item => 
+        item.videoData && item.videoData.videoId === videoId
       );
-
-      const data = await response.json();
-
-      // Check for API errors in the response
-      if (data.error) {
-        const errorMessage = data.error.message || 'Failed to fetch video data';
-        if (data.error.errors && data.error.errors.length > 0) {
-          const firstError = data.error.errors[0];
-          if (firstError.reason === 'keyInvalid') {
-            setError('Invalid API key. Please check your REACT_APP_YOUTUBE_API_KEY in .env file.');
-          } else if (firstError.reason === 'quotaExceeded') {
-            setError('YouTube API quota exceeded. Please try again later.');
-          } else {
-            setError(errorMessage);
-          }
-        } else {
-          setError(errorMessage);
-        }
-        setVideoData(null);
-        setLoading(false);
+      
+      if (existingItem) {
+        // Video already processed, load from history instead of calling API
+        handleLoadHistoryItem(existingItem);
         return;
       }
+    }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+    setUrl(videoUrl);
+    setGeneratingTimestamps(true);
 
-      if (data.items && data.items.length > 0) {
-        const video = data.items[0];
-        const snippet = video.snippet;
+    try {
+      const getTimestamps = httpsCallable(functions, 'get_timestamps');
+      const result = await getTimestamps({ url: videoUrl });
+      
+      if (result.data && result.data.success) {
+        const timestampData = result.data.data;
+        setTimestamps(timestampData);
         
-        // Get max resolution thumbnail, fallback to high if maxresdefault doesn't exist
-        const thumbnail = snippet.thumbnails.maxres || 
-                         snippet.thumbnails.high || 
-                         snippet.thumbnails.medium ||
-                         snippet.thumbnails.default;
-
-        setVideoData({
-          title: snippet.title,
-          thumbnail: thumbnail.url,
-          videoId: videoId
-        });
+        // Filter timestamps for history
+        const timestampList = timestampData.timestamps_list || [];
+        const filtered = [];
+        for (const timestamp of timestampList) {
+          if (timestamp.toLowerCase().includes('video tutorial')) {
+            filtered.push(timestamp);
+            break;
+          }
+          filtered.push(timestamp);
+        }
+        
+        // Save to history immediately when timestamps are generated
+        const historyItem = {
+          timestamps: filtered,
+          videoData: videoData,
+          timestampData: timestampData,
+          date: new Date().toISOString()
+        };
+        
+        // Add to Firestore and update state
+        try {
+          const updatedHistory = await addToFirestoreHistory(historyItem);
+          setHistory(updatedHistory);
+          setNewItemAdded(true);
+          setTimeout(() => {
+            setNewItemAdded(false);
+          }, 1500);
+        } catch (error) {
+          console.error('Error saving to Firestore:', error);
+          // Still show the timestamps even if save fails
+        }
       } else {
-        setError('Video not found');
-        setVideoData(null);
+        console.error('Failed to generate timestamps');
       }
     } catch (err) {
-      setError('Failed to fetch video information. Please check your API key and try again.');
-      setVideoData(null);
-      console.error('Error fetching video data:', err);
+      console.error('Error generating timestamps:', err);
     } finally {
-      setLoading(false);
+      setGeneratingTimestamps(false);
     }
   };
 
-  const handleUrlChange = (e) => {
-    const inputUrl = e.target.value;
-    setUrl(inputUrl);
-    if (error && inputUrl.trim()) {
-      setError('');
-    }
-    // Clear video data when URL changes
-    if (videoData) {
-      setVideoData(null);
-    }
-  };
-
-  const handleProceed = async () => {
-    if (!url.trim()) {
-      setError('Please enter a YouTube URL');
-      setVideoData(null);
-      return;
-    }
-
-    if (!validateYouTubeUrl(url)) {
-      setError('Please enter a valid YouTube URL');
-      setVideoData(null);
-      return;
-    }
-
-    // Extract video ID and fetch video data
-    const videoId = extractVideoId(url);
-    if (videoId) {
-      await fetchVideoData(videoId);
-    } else {
-      setError('Could not extract video ID from URL');
-      setVideoData(null);
+  const handleSaveToHistory = async (historyItem) => {
+    try {
+      // Add to Firestore and update state
+      const updatedHistory = await addToFirestoreHistory(historyItem);
+      setHistory(updatedHistory);
+      setNewItemAdded(true);
+      // Reset the flag after animation completes
+      setTimeout(() => {
+        setNewItemAdded(false);
+      }, 1500);
+    } catch (error) {
+      console.error('Error saving to Firestore:', error);
     }
   };
 
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleProceed();
-    }
+  const handleGenerateAnother = () => {
+    // Clear current state
+    setUrl('');
+    setVideoData(null);
+    setTimestamps(null);
+    setGeneratingTimestamps(false);
+    // Force Enter component to reset by changing key
+    setEnterKey(prev => prev + 1);
+  };
+
+  const handleLoadHistoryItem = (item) => {
+    // Load history item back into the component
+    setVideoData(item.videoData);
+    setTimestamps(item.timestampData);
+    // Clear the Enter component state by incrementing the key
+    setEnterKey(prev => prev + 1);
+    
+    // Scroll to the timestamp section to show the loaded content
+    setTimeout(() => {
+      const timestampSection = document.getElementById('timestamp-section');
+      if (timestampSection) {
+        timestampSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   return (
-    <div className="timestamp">
+    <div className="timestamp" id="timestamp-section">
       <div className="timestamp-container">
-        <h2 className="timestamp-heading">Enter your YouTube URL here</h2>
-        <div className="timestamp-input-wrapper">
-          <input
-            id="youtube-url-input"
-            name="youtube-url"
-            type="text"
-            className={`timestamp-input ${error ? 'timestamp-input-error' : ''}`}
-            placeholder="https://www.youtube.com/watch?v=..."
-            value={url}
-            onChange={handleUrlChange}
-            onKeyPress={handleKeyPress}
-            autoComplete="url"
+        <Enter 
+          key={enterKey}
+          onVideoDataChange={handleVideoDataChange}
+          onGenerateTimestamps={handleGenerateTimestamps}
+          generatingTimestamps={generatingTimestamps}
+          showOnlyPreview={!!timestamps}
+          videoData={videoData}
+        />
+        {timestamps && (
+          <Times
+            timestamps={timestamps}
+            videoData={videoData}
+            onGenerateAnother={handleGenerateAnother}
+            onSaveToHistory={handleSaveToHistory}
           />
-          {error && <p className="timestamp-error">{error}</p>}
-        </div>
-        <button className="timestamp-button" onClick={handleProceed} disabled={loading}>
-          {loading ? 'Loading...' : 'Proceed'}
-        </button>
-        
-        {videoData && (
-          <div className="timestamp-video-preview">
-            <img 
-              src={videoData.thumbnail} 
-              alt={videoData.title}
-              className="timestamp-video-thumbnail"
-            />
-            <h3 className="timestamp-video-title">{videoData.title}</h3>
-          </div>
         )}
       </div>
+      
+      <History
+        historyItems={history}
+        onLoadHistoryItem={handleLoadHistoryItem}
+        newItemAdded={newItemAdded}
+      />
     </div>
   );
 }
