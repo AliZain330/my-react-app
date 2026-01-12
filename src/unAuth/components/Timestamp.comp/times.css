@@ -1,6 +1,6 @@
 .times-component {
   width: 100%;
-  margin-top: 2rem;
+  margin-top: 0.75rem;
   animation: fadeIn 0.5s ease-in;
 }
 
@@ -11,16 +11,36 @@
 .times-box {
   background-color: white;
   border-radius: 12px;
-  padding: 2rem;
+  padding: 1rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .times-columns {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  margin-bottom: 2rem;
-  min-height: 200px;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar for timestamp columns */
+.times-columns::-webkit-scrollbar {
+  width: 6px;
+}
+
+.times-columns::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.times-columns::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.times-columns::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .times-column {
@@ -29,18 +49,18 @@
 }
 
 .times-column-left {
-  padding-right: 1rem;
+  padding-right: 0.75rem;
 }
 
 .times-column-right {
-  padding-left: 1rem;
+  padding-left: 0.75rem;
   border-left: 2px solid #e5e7eb;
 }
 
 .times-item {
-  padding: 0.75rem 0;
+  padding: 0.4rem 0;
   font-family: Arial, sans-serif;
-  line-height: 1.5;
+  line-height: 1.4;
   border-bottom: 1px solid #f3f4f6;
   text-align: left;
 }
@@ -52,14 +72,14 @@
 .times-time {
   color: #1e3a8a;
   font-weight: 600;
-  font-size: 1.125rem;
+  font-size: 0.95rem;
 }
 
 .times-actions {
   display: flex;
-  gap: 1rem;
+  gap: 0.75rem;
   justify-content: center;
-  padding-top: 1.5rem;
+  padding-top: 0.75rem;
   border-top: 2px solid #e5e7eb;
 }
 
@@ -67,10 +87,10 @@
   background: #1e3a8a;
   color: white;
   border: none;
-  padding: 0.875rem 2rem;
+  padding: 0.625rem 1.5rem;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   transition: all 0.3s ease;
   font-family: Arial, sans-serif;
@@ -109,7 +129,7 @@
   text-decoration: none;
   transition: color 0.2s ease;
   cursor: pointer;
-  font-size: 1.125rem;
+  font-size: 0.95rem;
 }
 
 .times-title-link:hover {
@@ -130,13 +150,14 @@
 
 @media (max-width: 768px) {
   .times-box {
-    padding: 1.5rem;
+    padding: 0.75rem;
   }
 
   .times-columns {
     grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    max-height: 300px;
   }
 
   .times-column-left {
@@ -147,17 +168,17 @@
     padding-left: 0;
     border-left: none;
     border-top: 2px solid #e5e7eb;
-    padding-top: 1rem;
-    margin-top: 1rem;
+    padding-top: 0.75rem;
+    margin-top: 0.75rem;
   }
 
   .times-item {
-    padding: 0.5rem 0;
-    font-size: 0.875rem;
+    padding: 0.35rem 0;
+    font-size: 0.8rem;
   }
 
   .times-time {
-    font-size: 0.875rem;
+    font-size: 0.8rem;
   }
 
   .times-title {
@@ -166,13 +187,14 @@
 
   .times-actions {
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
   }
 
   .times-button {
     width: 100%;
-    padding: 0.75rem 1.5rem;
-    font-size: 0.875rem;
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8rem;
   }
 }
 
