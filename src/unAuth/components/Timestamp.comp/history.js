@@ -13,7 +13,37 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
 
   // Always show exactly 5 items
   const maxVisible = 5;
-  const totalRealItems = historyItems ? historyItems.length : 0;
+  
+  // Deduplicate history items based on videoId to ensure each YouTube video appears only once
+  const deduplicatedItems = React.useMemo(() => {
+    if (!historyItems || historyItems.length === 0) {
+      return [];
+    }
+    
+    const seenVideoIds = new Set();
+    const uniqueItems = [];
+    
+    for (const item of historyItems) {
+      // Get videoId from videoData
+      const videoId = item.videoData?.videoId;
+      
+      // If no videoId, treat as unique (might be invalid data)
+      if (!videoId) {
+        uniqueItems.push(item);
+        continue;
+      }
+      
+      // Only add if we haven't seen this videoId before
+      if (!seenVideoIds.has(videoId)) {
+        seenVideoIds.add(videoId);
+        uniqueItems.push(item);
+      }
+    }
+    
+    return uniqueItems;
+  }, [historyItems]);
+  
+  const totalRealItems = deduplicatedItems.length;
   
   // Create exactly 5 placeholder items
   const placeholderItems = Array.from({ length: maxVisible }, (_, i) => ({
@@ -32,22 +62,26 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
     // Some real items, fill the rest with placeholders
     const placeholdersNeeded = maxVisible - totalRealItems;
     itemsToShow = [
-      ...historyItems.slice(0, totalRealItems),
+      ...deduplicatedItems.slice(0, totalRealItems),
       ...placeholderItems.slice(0, placeholdersNeeded)
     ];
   } else {
     // 5 or more real items, use only real items
-    itemsToShow = historyItems;
+    itemsToShow = deduplicatedItems;
   }
 
   const totalItems = itemsToShow.length;
+  const maxScrollIndex = Math.max(0, totalItems - maxVisible);
 
-  // Auto-scroll every 5 seconds - always scroll, even with placeholders
+  // Auto-scroll every 5 seconds - loop back to start when reaching the end
   useEffect(() => {
     autoScrollIntervalRef.current = setInterval(() => {
       setCurrentIndex((prevIndex) => {
-        // Circular rotation - always move to next item
-        return (prevIndex + 1) % totalItems;
+        // If we've reached the end, loop back to start; otherwise move to next
+        if (prevIndex >= maxScrollIndex) {
+          return 0;
+        }
+        return prevIndex + 1;
       });
     }, 5000); // 5 seconds
 
@@ -56,7 +90,7 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
         clearInterval(autoScrollIntervalRef.current);
       }
     };
-  }, [totalItems]);
+  }, [totalItems, maxScrollIndex]);
 
   // Handle new item animation - reset to show newest
   useEffect(() => {
@@ -67,7 +101,11 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
 
   const handleScrollRight = () => {
     setCurrentIndex((prevIndex) => {
-      return (prevIndex + 1) % totalItems;
+      // If we've reached the end, loop back to start; otherwise move to next
+      if (prevIndex >= maxScrollIndex) {
+        return 0;
+      }
+      return prevIndex + 1;
     });
   };
 
@@ -92,12 +130,11 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
     }
   };
 
-  // For circular scrolling, duplicate items at the end for seamless loop
-  const extendedItems = [...itemsToShow, ...itemsToShow.slice(0, maxVisible)];
-  
   // Calculate transform - each card position is approximately 20% of container
   // (card width + gap) / container width ≈ 20%
-  const translateX = -(currentIndex * 20);
+  // Limit scrolling to prevent going beyond the last item
+  const clampedIndex = Math.min(currentIndex, maxScrollIndex);
+  const translateX = -(clampedIndex * 20);
 
   return (
     <div className="history-component" id="history-section">
@@ -109,14 +146,13 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
             transform: `translateX(${translateX}%)`
           }}
         >
-          {/* Render extended items for seamless circular scrolling */}
-          {extendedItems.map((item, index) => {
+          {/* Render items - each video appears only once */}
+          {itemsToShow.map((item, index) => {
             const isPlaceholder = item.isPlaceholder;
             const thumbnail = isPlaceholder ? null : getVideoThumbnail(item);
             const title = isPlaceholder ? item.title : getVideoTitle(item);
-            const originalIndex = index % totalItems;
-            const isNewItem = newItemAdded && !isPlaceholder && originalIndex === 0 && totalRealItems > 0;
-            const itemKey = `${item.id || originalIndex}-${index}`;
+            const isNewItem = newItemAdded && !isPlaceholder && index === 0 && totalRealItems > 0;
+            const itemKey = item.id || `item-${index}`;
             
             return (
               <div
