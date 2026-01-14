@@ -29,66 +29,89 @@ const firebaseConfig = {
 };
 
 // Validate required Firebase config values
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId || !firebaseConfig.appId) {
+let app, auth, db, functions;
+const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId;
+
+if (!isFirebaseConfigured) {
   const missingVars = [];
   if (!firebaseConfig.apiKey) missingVars.push('REACT_APP_API_KEY');
   if (!firebaseConfig.projectId) missingVars.push('REACT_APP_PROJECT_ID');
   if (!firebaseConfig.appId) missingVars.push('REACT_APP_APP_ID');
   
-  console.error('❌ Firebase configuration error: Missing required environment variables:', missingVars.join(', '));
-  console.error('Please check your .env file and ensure all Firebase config values are set.');
-  console.error('Then restart your development server with: npm start');
-  throw new Error(`Missing Firebase configuration: ${missingVars.join(', ')}. Please check your .env file and restart the dev server.`);
+  console.warn('⚠️ Firebase configuration warning: Missing required environment variables:', missingVars.join(', '));
+  console.warn('⚠️ Firebase features (Auth, Firestore) will not work until .env file is configured.');
+  console.warn('⚠️ Please check your .env file and ensure all Firebase config values are set.');
+  console.warn('⚠️ Then restart your development server with: npm start');
+  
+  // Create dummy objects to prevent crashes
+  app = null;
+  auth = null;
+  db = null;
+  functions = null;
+} else {
+  // Initialize Firebase
+  try {
+    app = initializeApp(firebaseConfig);
+    
+    // Initialize services
+    auth = getAuth(app);
+    db = getFirestore(app);
+    functions = getFunctions(app);
+  } catch (error) {
+    console.error('❌ Firebase initialization error:', error);
+    app = null;
+    auth = null;
+    db = null;
+    functions = null;
+  }
 }
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Connect to emulators in development mode (only if Firebase is configured)
+if (isFirebaseConfigured && app && auth && db && functions) {
+  const useEmulator = process.env.NODE_ENV === 'development' && 
+                      process.env.REACT_APP_USE_EMULATOR !== 'false';
 
-// Initialize services
-const auth = getAuth(app);
-const db = getFirestore(app);
-const functions = getFunctions(app);
-
-// Connect to emulators in development mode
-// Only connect if emulators are not already connected
-const useEmulator = process.env.NODE_ENV === 'development' && 
-                    process.env.REACT_APP_USE_EMULATOR !== 'false';
-
-if (useEmulator) {
-  try {
-    // Connect to Auth Emulator
-    connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
-    
-    // Connect to Functions Emulator
-    connectFunctionsEmulator(functions, "localhost", 5001);
-    
-    // Connect to Firestore Emulator (requires Java - comment out if not using emulator)
+  if (useEmulator) {
     try {
-      connectFirestoreEmulator(db, "localhost", 8080);
-      console.log("🔥 Firebase Emulators connected!");
-      console.log("   - Auth: http://localhost:9099");
-      console.log("   - Functions: localhost:5001");
-      console.log("   - Firestore: localhost:8080");
-    } catch (firestoreError) {
-      // Firestore emulator not running, use production Firestore
-      console.log("🔥 Firebase Emulators connected!");
-      console.log("   - Auth: http://localhost:9099");
-      console.log("   - Functions: localhost:5001");
-      console.log("   - Firestore: Using production database (emulator not available)");
+      // Connect to Auth Emulator
+      connectAuthEmulator(auth, "http://localhost:9099", { disableWarnings: true });
+      
+      // Connect to Functions Emulator
+      connectFunctionsEmulator(functions, "localhost", 5001);
+      
+      // Connect to Firestore Emulator (requires Java - comment out if not using emulator)
+      try {
+        connectFirestoreEmulator(db, "localhost", 8080);
+        console.log("🔥 Firebase Emulators connected!");
+        console.log("   - Auth: http://localhost:9099");
+        console.log("   - Functions: localhost:5001");
+        console.log("   - Firestore: localhost:8080");
+      } catch (firestoreError) {
+        // Firestore emulator not running, use production Firestore
+        console.log("🔥 Firebase Emulators connected!");
+        console.log("   - Auth: http://localhost:9099");
+        console.log("   - Functions: localhost:5001");
+        console.log("   - Firestore: Using production database (emulator not available)");
+      }
+    } catch (error) {
+      // Emulators already connected or error connecting
+      console.warn("⚠️ Firebase Emulator connection warning:", error.message);
     }
-  } catch (error) {
-    // Emulators already connected or error connecting
-    console.warn("⚠️ Firebase Emulator connection warning:", error.message);
+  } else {
+    console.log("🔥 Firebase initialized (production mode)");
+    console.log("   - Firestore: Connected to production database");
   }
-} else {
-  console.log("🔥 Firebase initialized (production mode)");
-  console.log("   - Firestore: Connected to production database");
 }
 
 // Initialize Analytics (only in production)
 let analytics = null;
-if (process.env.NODE_ENV === 'production') {
-  analytics = getAnalytics(app);
+if (process.env.NODE_ENV === 'production' && app) {
+  try {
+    analytics = getAnalytics(app);
+  } catch (error) {
+    console.error('❌ Analytics initialization error:', error);
+    analytics = null;
+  }
 }
 
 // Export services

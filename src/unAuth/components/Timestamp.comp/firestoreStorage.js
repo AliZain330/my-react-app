@@ -23,6 +23,11 @@ const MAX_HISTORY_ITEMS = 100;
  * @returns {Promise<string>} Document ID of the saved item
  */
 export const saveToFirestore = async (historyItem) => {
+  if (!db) {
+    console.warn('⚠️ Firestore not configured. Cannot save to Firestore.');
+    return null;
+  }
+  
   try {
     // Convert date string to Firestore Timestamp if needed
     const itemToSave = {
@@ -46,6 +51,11 @@ export const saveToFirestore = async (historyItem) => {
  * @returns {Promise<Array>} Array of history items
  */
 export const loadFromFirestore = async () => {
+  if (!db) {
+    console.warn('⚠️ Firestore not configured. Cannot load from Firestore.');
+    return [];
+  }
+  
   try {
     const q = query(
       collection(db, COLLECTION_NAME),

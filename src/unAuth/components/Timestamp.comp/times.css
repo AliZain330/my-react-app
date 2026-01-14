@@ -75,6 +75,63 @@
   font-size: 0.95rem;
 }
 
+.times-auth-message {
+  background-color: #fef3c7;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  animation: fadeIn 0.3s ease;
+}
+
+.times-auth-message-text {
+  color: #92400e;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem 0;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+.times-auth-message-buttons {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.times-auth-button {
+  border: none;
+  padding: 0.5rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  font-family: Arial, sans-serif;
+}
+
+.times-auth-login {
+  background: #1e3a8a;
+  color: white;
+}
+
+.times-auth-login:hover {
+  background: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+}
+
+.times-auth-signup {
+  background: white;
+  color: #1e3a8a;
+  border: 2px solid #1e3a8a;
+}
+
+.times-auth-signup:hover {
+  background: #f3f4f6;
+  transform: translateY(-1px);
+}
+
 .times-actions {
   display: flex;
   gap: 0.75rem;
@@ -183,6 +240,27 @@
 
   .times-title {
     font-size: 0.875rem;
+  }
+
+  .times-auth-message {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .times-auth-message-text {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .times-auth-message-buttons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .times-auth-button {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
   }
 
   .times-actions {
