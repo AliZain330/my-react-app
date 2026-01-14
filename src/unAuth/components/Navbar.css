@@ -97,6 +97,11 @@
   font-weight: 600;
   transition: all 0.3s ease;
   white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
 }
 
 .navbar-button-login:hover {
@@ -114,10 +119,51 @@
   font-weight: 600;
   transition: all 0.3s ease;
   white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
 }
 
 .navbar-button-contact:hover {
   background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-profile-avatar {
+  background: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+  overflow: hidden;
+  font-family: Arial, sans-serif;
+}
+
+.navbar-profile-avatar:hover {
+  transform: scale(1.1);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.navbar-avatar-initial {
+  color: #1e3a8a;
+  font-size: 1.25rem;
+  font-weight: 700;
+  user-select: none;
 }
 
 /* Tablet styles */
@@ -162,6 +208,15 @@
   .navbar-button-contact {
     padding: 0.65rem 1.25rem;
     font-size: 1rem;
+  }
+
+  .navbar-profile-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .navbar-avatar-initial {
+    font-size: 1.1rem;
   }
 }
 
@@ -251,6 +306,15 @@
     flex: none;
     min-width: auto;
     text-align: center;
+  }
+
+  .navbar-profile-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .navbar-avatar-initial {
+    font-size: 1rem;
   }
 }
 

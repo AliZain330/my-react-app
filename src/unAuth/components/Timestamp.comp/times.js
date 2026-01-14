@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './times.css';
 
-function Times({ timestamps, videoData, onGenerateAnother, onSaveToHistory }) {
+function Times({ timestamps, videoData, onGenerateAnother, onSaveToHistory, user, onOpenLogin, onOpenSignup }) {
+  const [authMessage, setAuthMessage] = useState('');
   // Parse and filter timestamps to show only from 0:00 to "video tutorial"
   const getFilteredTimestamps = () => {
     if (!timestamps || !timestamps.timestamps_list) {
@@ -95,6 +96,19 @@ function Times({ timestamps, videoData, onGenerateAnother, onSaveToHistory }) {
   };
 
   const handleGenerateAnother = () => {
+    // Check if user is authenticated
+    if (!user) {
+      setAuthMessage('Please login or signup to input a new URL');
+      // Clear message after 5 seconds
+      setTimeout(() => {
+        setAuthMessage('');
+      }, 5000);
+      return;
+    }
+
+    // Clear auth message if user is authenticated
+    setAuthMessage('');
+
     // Save to history before clearing
     if (onSaveToHistory) {
       onSaveToHistory({
@@ -154,6 +168,31 @@ function Times({ timestamps, videoData, onGenerateAnother, onSaveToHistory }) {
             })}
           </div>
         </div>
+        {authMessage && (
+          <div className="times-auth-message">
+            <p className="times-auth-message-text">{authMessage}</p>
+            <div className="times-auth-message-buttons">
+              <button 
+                className="times-auth-button times-auth-login" 
+                onClick={() => {
+                  setAuthMessage('');
+                  if (onOpenLogin) onOpenLogin();
+                }}
+              >
+                Log in
+              </button>
+              <button 
+                className="times-auth-button times-auth-signup" 
+                onClick={() => {
+                  setAuthMessage('');
+                  if (onOpenSignup) onOpenSignup();
+                }}
+              >
+                Sign up
+              </button>
+            </div>
+          </div>
+        )}
         <div className="times-actions">
           <button 
             className="times-button times-generate-button" 

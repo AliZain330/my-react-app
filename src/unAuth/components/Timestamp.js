@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
-import { functions } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
+import { functions, auth } from '../../firebase';
 import Enter from './Timestamp.comp/enter';
 import Times from './Timestamp.comp/times';
 import History from './Timestamp.comp/history';
 import { loadFromFirestore, addToHistory as addToFirestoreHistory } from './Timestamp.comp/firestoreStorage';
 import './Timestamp.css';
 
-function Timestamp() {
+function Timestamp({ onOpenLogin, onOpenSignup }) {
   const [url, setUrl] = useState('');
   const [videoData, setVideoData] = useState(null);
   const [timestamps, setTimestamps] = useState(null);
@@ -15,6 +16,18 @@ function Timestamp() {
   const [history, setHistory] = useState([]);
   const [enterKey, setEnterKey] = useState(0); // Key to force reset of Enter component
   const [newItemAdded, setNewItemAdded] = useState(false);
+  const [user, setUser] = useState(null);
+
+  // Track authentication state
+  useEffect(() => {
+    if (!auth) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // Load history from Firestore on component mount
   useEffect(() => {
@@ -68,6 +81,12 @@ function Timestamp() {
     setGeneratingTimestamps(true);
 
     try {
+      if (!functions) {
+        console.error('Firebase Functions not configured. Please check your .env file.');
+        setGeneratingTimestamps(false);
+        return;
+      }
+      
       const getTimestamps = httpsCallable(functions, 'get_timestamps');
       const result = await getTimestamps({ url: videoUrl });
       
@@ -174,6 +193,9 @@ function Timestamp() {
             videoData={videoData}
             onGenerateAnother={handleGenerateAnother}
             onSaveToHistory={handleSaveToHistory}
+            user={user}
+            onOpenLogin={onOpenLogin}
+            onOpenSignup={onOpenSignup}
           />
         )}
       </div>
