@@ -1,7 +1,8 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
+import { getAuth, connectAuthEmulator, onAuthStateChanged, signInAnonymously } from "firebase/auth";
 import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
@@ -29,7 +30,7 @@ const firebaseConfig = {
 };
 
 // Validate required Firebase config values
-let app, auth, db, functions;
+let app, auth, db, functions, appCheck;
 const isFirebaseConfigured = firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId;
 
 if (!isFirebaseConfigured) {
@@ -48,6 +49,7 @@ if (!isFirebaseConfigured) {
   auth = null;
   db = null;
   functions = null;
+  appCheck = null;
 } else {
   // Initialize Firebase
   try {
@@ -57,12 +59,24 @@ if (!isFirebaseConfigured) {
     auth = getAuth(app);
     db = getFirestore(app);
     functions = getFunctions(app);
+
+    // Initialize App Check (requires reCAPTCHA v3 site key)
+    if (process.env.REACT_APP_RECAPTCHA_SITE_KEY) {
+      appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider(process.env.REACT_APP_RECAPTCHA_SITE_KEY),
+        isTokenAutoRefreshedEnabled: true
+      });
+    } else {
+      console.warn('⚠️ App Check not initialized: Missing REACT_APP_RECAPTCHA_SITE_KEY');
+      appCheck = null;
+    }
   } catch (error) {
     console.error('❌ Firebase initialization error:', error);
     app = null;
     auth = null;
     db = null;
     functions = null;
+    appCheck = null;
   }
 }
 
@@ -103,6 +117,17 @@ if (isFirebaseConfigured && app && auth && db && functions) {
   }
 }
 
+// Ensure anonymous sign-in and keep auth state in sync
+if (auth) {
+  onAuthStateChanged(auth, (user) => {
+    if (!user) {
+      signInAnonymously(auth).catch((error) => {
+        console.error('❌ Anonymous sign-in error:', error);
+      });
+    }
+  });
+}
+
 // Initialize Analytics (only in production)
 let analytics = null;
 if (process.env.NODE_ENV === 'production' && app) {
@@ -115,4 +140,4 @@ if (process.env.NODE_ENV === 'production' && app) {
 }
 
 // Export services
-export { app, auth, functions, analytics, db };
+export { app, auth, functions, analytics, db, appCheck };
