@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  linkWithCredential,
+  linkWithPopup,
+  signInWithEmailAndPassword,
+  signInWithPopup
+} from 'firebase/auth';
 import { auth } from '../../firebase';
 import './Login.css';
 import logo from '../../assets/logo.png';
@@ -38,7 +45,21 @@ function Login({ onClose, onSwitchToSignup, onOpenForgotPassword }) {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const existingUser = auth.currentUser;
+      if (existingUser && existingUser.isAnonymous) {
+        const credential = EmailAuthProvider.credential(email, password);
+        try {
+          await linkWithCredential(existingUser, credential);
+        } catch (linkError) {
+          if (linkError.code === 'auth/credential-already-in-use' || linkError.code === 'auth/email-already-in-use') {
+            await signInWithEmailAndPassword(auth, email, password);
+          } else {
+            throw linkError;
+          }
+        }
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
+      }
       // Close modal on successful login
       onClose();
       // Reset form
@@ -62,7 +83,21 @@ function Login({ onClose, onSwitchToSignup, onOpenForgotPassword }) {
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const existingUser = auth.currentUser;
+
+      if (existingUser && existingUser.isAnonymous) {
+        try {
+          await linkWithPopup(existingUser, provider);
+        } catch (linkError) {
+          if (linkError.code === 'auth/credential-already-in-use' || linkError.code === 'auth/account-exists-with-different-credential') {
+            await signInWithPopup(auth, provider);
+          } else {
+            throw linkError;
+          }
+        }
+      } else {
+        await signInWithPopup(auth, provider);
+      }
       // Close modal on successful login
       onClose();
       // Reset form

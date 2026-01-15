@@ -15,6 +15,13 @@
   text-align: left;
 }
 
+.history-empty {
+  color: #6b7280;
+  font-size: 0.95rem;
+  margin: 0 0 1rem 0;
+  font-family: Arial, sans-serif;
+}
+
 .history-carousel-container {
   position: relative;
   width: 100%;
