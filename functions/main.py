@@ -18,7 +18,7 @@ set_global_options(max_instances=10)
 initialize_app()
 
 
-@https_fn.on_call()
+@https_fn.on_call(enforce_app_check=True)
 def get_timestamps(req: https_fn.CallableRequest) -> dict:
     """
     HTTP callable function that generates chapter markers/timestamps for YouTube videos
@@ -29,6 +29,20 @@ def get_timestamps(req: https_fn.CallableRequest) -> dict:
         "url": "https://www.youtube.com/watch?v=..."
     }
     """
+    # Auth guard: require signed-in user (anonymous OK)
+    if not req.auth:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.UNAUTHENTICATED,
+            message="Authentication required"
+        )
+
+    # App Check guard: requires App Check token
+    if not req.app:
+        raise https_fn.HttpsError(
+            code=https_fn.FunctionsErrorCode.FAILED_PRECONDITION,
+            message="App Check token required"
+        )
+
     # Bumpups API key - get from environment variable
     # For Python Firebase Functions, config values set via firebase functions:config:set
     # are available as environment variables. The config "bumpups.api_key" should be

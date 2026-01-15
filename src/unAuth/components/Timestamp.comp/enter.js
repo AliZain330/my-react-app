@@ -12,6 +12,13 @@ function Enter({ onVideoDataChange, onGenerateTimestamps, generatingTimestamps, 
   const [error, setError] = useState('');
   const [videoData, setVideoData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const normalizeErrorMessage = (message) => {
+    if (!message) return '';
+    if (message.toLowerCase().includes('api key not valid')) {
+      return 'Failed to fetch video preview. Please try again.';
+    }
+    return message;
+  };
 
   // Use external videoData if provided (from history), otherwise use internal state
   const displayVideoData = externalVideoData || videoData;
@@ -31,77 +38,108 @@ function Enter({ onVideoDataChange, onGenerateTimestamps, generatingTimestamps, 
     return match ? match[1] : null;
   };
 
-  const fetchVideoData = async (videoId) => {
-    const apiKey = process.env.REACT_APP_YOUTUBE_API_KEY;
-    if (!apiKey) {
-      setError('YouTube API key is not configured. Please check your .env file.');
-      setLoading(false);
-      return;
+  const fetchOEmbedData = async (videoUrl, videoId) => {
+    const response = await fetch(
+      `https://www.youtube.com/oembed?url=${encodeURIComponent(videoUrl)}&format=json`
+    );
+
+    if (!response.ok) {
+      throw new Error(`oEmbed request failed: ${response.status}`);
     }
 
+    const data = await response.json();
+    const newVideoData = {
+      title: data.title,
+      thumbnail: data.thumbnail_url,
+      videoId: videoId
+    };
+
+    setVideoData(newVideoData);
+    if (onVideoDataChange) onVideoDataChange(newVideoData);
+  };
+
+  const fetchNoEmbedData = async (videoUrl, videoId) => {
+    const response = await fetch(
+      `https://noembed.com/embed?url=${encodeURIComponent(videoUrl)}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`noembed request failed: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (!data.title || !data.thumbnail_url) {
+      throw new Error('noembed response missing title or thumbnail');
+    }
+
+    const newVideoData = {
+      title: data.title,
+      thumbnail: data.thumbnail_url,
+      videoId: videoId
+    };
+
+    setVideoData(newVideoData);
+    if (onVideoDataChange) onVideoDataChange(newVideoData);
+  };
+
+  const fetchVideoData = async (videoId, videoUrl) => {
     setLoading(true);
     setError('');
 
     try {
-      const response = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${apiKey}&part=snippet`
-      );
-
-      const data = await response.json();
-
-      // Check for API errors in the response
-      if (data.error) {
-        const errorMessage = data.error.message || 'Failed to fetch video data';
-        if (data.error.errors && data.error.errors.length > 0) {
-          const firstError = data.error.errors[0];
-          if (firstError.reason === 'keyInvalid') {
-            setError('Invalid API key. Please check your REACT_APP_YOUTUBE_API_KEY in .env file.');
-          } else if (firstError.reason === 'quotaExceeded') {
-            setError('YouTube API quota exceeded. Please try again later.');
-          } else {
-            setError(errorMessage);
-          }
-        } else {
-          setError(errorMessage);
-        }
-        setVideoData(null);
-        setLoading(false);
-        if (onVideoDataChange) onVideoDataChange(null);
+      try {
+        // Prefer noembed first (reliable CORS on hosted sites)
+        await fetchNoEmbedData(videoUrl, videoId);
         return;
+      } catch (noEmbedError) {
+        console.warn('noembed failed, trying YouTube oEmbed:', noEmbedError);
       }
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      try {
+        // YouTube oEmbed as secondary fallback
+        await fetchOEmbedData(videoUrl, videoId);
+        return;
+      } catch (oEmbedError) {
+        console.warn('YouTube oEmbed failed:', oEmbedError);
       }
 
-      if (data.items && data.items.length > 0) {
-        const video = data.items[0];
-        const snippet = video.snippet;
-        
-        // Get max resolution thumbnail, fallback to high if maxresdefault doesn't exist
-        const thumbnail = snippet.thumbnails.maxres || 
-                         snippet.thumbnails.high || 
-                         snippet.thumbnails.medium ||
-                         snippet.thumbnails.default;
+      if (process.env.NODE_ENV !== 'production' && process.env.REACT_APP_YOUTUBE_API_KEY) {
+        try {
+          const response = await fetch(
+            `https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${process.env.REACT_APP_YOUTUBE_API_KEY}&part=snippet`
+          );
+          const data = await response.json();
 
-        const newVideoData = {
-          title: snippet.title,
-          thumbnail: thumbnail.url,
-          videoId: videoId
-        };
-        
-        setVideoData(newVideoData);
-        if (onVideoDataChange) onVideoDataChange(newVideoData);
-      } else {
-        setError('Video not found');
-        setVideoData(null);
-        if (onVideoDataChange) onVideoDataChange(null);
+          if (!response.ok || data.error) {
+            throw new Error(data.error?.message || `HTTP error! status: ${response.status}`);
+          }
+
+          if (data.items && data.items.length > 0) {
+            const video = data.items[0];
+            const snippet = video.snippet;
+            const thumbnail = snippet.thumbnails.maxres ||
+                             snippet.thumbnails.high ||
+                             snippet.thumbnails.medium ||
+                             snippet.thumbnails.default;
+
+            const newVideoData = {
+              title: snippet.title,
+              thumbnail: thumbnail.url,
+              videoId: videoId
+            };
+
+            setVideoData(newVideoData);
+            if (onVideoDataChange) onVideoDataChange(newVideoData);
+            return;
+          }
+        } catch (dataApiError) {
+          console.warn('YouTube Data API failed in development:', dataApiError);
+        }
       }
-    } catch (err) {
-      setError('Failed to fetch video information. Please check your API key and try again.');
+
+      setError('Failed to fetch video information. Please try again.');
       setVideoData(null);
       if (onVideoDataChange) onVideoDataChange(null);
-      console.error('Error fetching video data:', err);
     } finally {
       setLoading(false);
     }
@@ -138,7 +176,7 @@ function Enter({ onVideoDataChange, onGenerateTimestamps, generatingTimestamps, 
     // Extract video ID and fetch video data
     const videoId = extractVideoId(url);
     if (videoId) {
-      await fetchVideoData(videoId);
+      await fetchVideoData(videoId, url);
     } else {
       setError('Could not extract video ID from URL');
       setVideoData(null);
@@ -201,7 +239,7 @@ function Enter({ onVideoDataChange, onGenerateTimestamps, generatingTimestamps, 
             )}
           </div>
         </div>
-        {error && <p className="enter-error">{error}</p>}
+        {error && <p className="enter-error">{normalizeErrorMessage(error)}</p>}
       </div>
       </>
       )}

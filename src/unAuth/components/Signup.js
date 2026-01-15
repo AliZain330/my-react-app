@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { createUserWithEmailAndPassword, sendEmailVerification, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  EmailAuthProvider,
+  GoogleAuthProvider,
+  linkWithCredential,
+  linkWithPopup,
+  sendEmailVerification,
+  signInWithPopup
+} from 'firebase/auth';
 import { auth } from '../../firebase';
 import './Signup.css';
 import logo from '../../assets/logo.png';
@@ -51,7 +59,16 @@ function Signup({ onClose, onSwitchToLogin }) {
     setLoading(true);
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const existingUser = auth.currentUser;
+      let userCredential;
+
+      if (existingUser && existingUser.isAnonymous) {
+        const credential = EmailAuthProvider.credential(email, password);
+        userCredential = await linkWithCredential(existingUser, credential);
+      } else {
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      }
+
       const user = userCredential.user;
       
       // Send email verification
@@ -73,6 +90,8 @@ function Signup({ onClose, onSwitchToLogin }) {
     } catch (err) {
       let errorMessage = 'Failed to create account. Please try again.';
       if (err.code === 'auth/email-already-in-use') {
+        errorMessage = 'This email is already registered. Please log in instead.';
+      } else if (err.code === 'auth/credential-already-in-use') {
         errorMessage = 'This email is already registered. Please log in instead.';
       } else if (err.code === 'auth/invalid-email') {
         errorMessage = 'Invalid email address.';
@@ -96,7 +115,21 @@ function Signup({ onClose, onSwitchToLogin }) {
 
     try {
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      const existingUser = auth.currentUser;
+
+      if (existingUser && existingUser.isAnonymous) {
+        try {
+          await linkWithPopup(existingUser, provider);
+        } catch (linkError) {
+          if (linkError.code === 'auth/credential-already-in-use' || linkError.code === 'auth/account-exists-with-different-credential') {
+            await signInWithPopup(auth, provider);
+          } else {
+            throw linkError;
+          }
+        }
+      } else {
+        await signInWithPopup(auth, provider);
+      }
       // Close modal on successful signup
       onClose();
       // Reset form
@@ -109,6 +142,8 @@ function Signup({ onClose, onSwitchToLogin }) {
         errorMessage = 'Sign up was cancelled.';
       } else if (err.code === 'auth/popup-blocked') {
         errorMessage = 'Popup was blocked. Please allow popups for this site.';
+      } else if (err.code === 'auth/account-exists-with-different-credential') {
+        errorMessage = 'An account already exists with a different sign-in method.';
       }
       setError(errorMessage);
     } finally {

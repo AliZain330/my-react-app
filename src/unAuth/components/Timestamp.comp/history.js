@@ -13,6 +13,22 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
 
   // Always show exactly 5 items
   const maxVisible = 5;
+
+  const extractVideoId = (urlString) => {
+    if (!urlString || typeof urlString !== 'string') return null;
+    const match = urlString.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+    return match ? match[1] : null;
+  };
+
+  const getVideoIdFromItem = (item) => {
+    if (item.videoData?.videoId) return item.videoData.videoId;
+    if (item.timestampData?.videoId) return item.timestampData.videoId;
+    if (item.timestampData?.video_id) return item.timestampData.video_id;
+    if (item.timestampData?.videoUrl) return extractVideoId(item.timestampData.videoUrl);
+    if (item.timestampData?.url) return extractVideoId(item.timestampData.url);
+    if (item.url) return extractVideoId(item.url);
+    return null;
+  };
   
   // Deduplicate history items based on videoId to ensure each YouTube video appears only once
   const deduplicatedItems = React.useMemo(() => {
@@ -24,8 +40,8 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
     const uniqueItems = [];
     
     for (const item of historyItems) {
-      // Get videoId from videoData
-      const videoId = item.videoData?.videoId;
+      // Get videoId from multiple possible sources
+      const videoId = getVideoIdFromItem(item);
       
       // If no videoId, treat as unique (might be invalid data)
       if (!videoId) {
@@ -113,12 +129,25 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
     if (item.videoData && item.videoData.title) {
       return item.videoData.title;
     }
+    if (item.timestampData?.title) {
+      return item.timestampData.title;
+    }
+    if (item.timestampData?.video_title) {
+      return item.timestampData.video_title;
+    }
+    if (item.timestampData?.videoTitle) {
+      return item.timestampData.videoTitle;
+    }
     return 'Untitled Video';
   };
 
   const getVideoThumbnail = (item) => {
     if (item.videoData && item.videoData.thumbnail) {
       return item.videoData.thumbnail;
+    }
+    const videoId = getVideoIdFromItem(item);
+    if (videoId) {
+      return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
     }
     return null;
   };
@@ -139,6 +168,11 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
   return (
     <div className="history-component" id="history-section">
       <h3 className="history-heading">See past examples</h3>
+      {totalRealItems === 0 && (
+        <p className="history-empty">
+          No history yet. Generate timestamps to see videos here.
+        </p>
+      )}
       <div className="history-carousel-container">
         <div 
           className="history-carousel"

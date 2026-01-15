@@ -82,8 +82,8 @@ if (!isFirebaseConfigured) {
 
 // Connect to emulators in development mode (only if Firebase is configured)
 if (isFirebaseConfigured && app && auth && db && functions) {
-  const useEmulator = process.env.NODE_ENV === 'development' && 
-                      process.env.REACT_APP_USE_EMULATOR !== 'false';
+  const useEmulator = process.env.NODE_ENV === 'development' &&
+                      process.env.REACT_APP_USE_EMULATOR === 'true';
 
   if (useEmulator) {
     try {
