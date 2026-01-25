@@ -22,6 +22,20 @@
   font-family: Arial, sans-serif;
 }
 
+.history-loading {
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin: 0 0 1rem 0;
+  font-family: Arial, sans-serif;
+}
+
+.history-error {
+  color: #b91c1c;
+  font-size: 0.95rem;
+  margin: 0 0 1rem 0;
+  font-family: Arial, sans-serif;
+}
+
 .history-carousel-container {
   position: relative;
   width: 100%;

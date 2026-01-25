@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { httpsCallable } from 'firebase/functions';
 import { onAuthStateChanged } from 'firebase/auth';
-import { functions, auth } from '../../firebase';
+import { functions, auth, db } from '../../firebase';
 import Enter from './Timestamp.comp/enter';
 import Times from './Timestamp.comp/times';
 import History from './Timestamp.comp/history';
@@ -17,13 +17,21 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
   const [enterKey, setEnterKey] = useState(0); // Key to force reset of Enter component
   const [newItemAdded, setNewItemAdded] = useState(false);
   const [user, setUser] = useState(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const [historyError, setHistoryError] = useState('');
+  const [requestError, setRequestError] = useState('');
 
   // Track authentication state
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setAuthReady(true);
+      return;
+    }
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setAuthReady(true);
     });
 
     return () => unsubscribe();
@@ -33,16 +41,27 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
   useEffect(() => {
     const loadHistoryData = async () => {
       try {
-        const savedHistory = await loadFromFirestore();
-        if (savedHistory.length > 0) {
-          setHistory(savedHistory);
+        if (!db) {
+          setHistoryError('Firestore is not configured. Check your .env and restart.');
+          setHistory([]);
+          return;
         }
+        setHistoryLoading(true);
+        setHistoryError('');
+        const savedHistory = await loadFromFirestore();
+        setHistory(savedHistory);
       } catch (error) {
         console.error('Error loading history:', error);
+        setHistoryError(error?.message || 'Failed to load history.');
+        setHistory([]);
+      } finally {
+        setHistoryLoading(false);
       }
     };
-    loadHistoryData();
-  }, []);
+    if (authReady) {
+      loadHistoryData();
+    }
+  }, [authReady, user]);
 
   const extractVideoId = (urlString) => {
     const match = urlString.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
@@ -79,10 +98,13 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
 
     setUrl(videoUrl);
     setGeneratingTimestamps(true);
+    setRequestError('');
 
     try {
       if (!functions) {
-        console.error('Firebase Functions not configured. Please check your .env file.');
+        const message = 'Firebase Functions is not configured. Check your .env and restart.';
+        console.error(message);
+        setRequestError(message);
         setGeneratingTimestamps(false);
         return;
       }
@@ -126,10 +148,14 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
           // Still show the timestamps even if save fails
         }
       } else {
-        console.error('Failed to generate timestamps');
+        const message = 'Failed to generate timestamps. Please try again.';
+        console.error(message);
+        setRequestError(message);
       }
     } catch (err) {
+      const message = err?.message || 'Error generating timestamps. Please try again.';
       console.error('Error generating timestamps:', err);
+      setRequestError(message);
     } finally {
       setGeneratingTimestamps(false);
     }
@@ -187,6 +213,9 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
           showOnlyPreview={!!timestamps}
           videoData={videoData}
         />
+        {requestError && (
+          <p className="timestamp-error">{requestError}</p>
+        )}
         {timestamps && (
           <Times
             timestamps={timestamps}
@@ -204,6 +233,8 @@ function Timestamp({ onOpenLogin, onOpenSignup }) {
         historyItems={history}
         onLoadHistoryItem={handleLoadHistoryItem}
         newItemAdded={newItemAdded}
+        loading={historyLoading}
+        error={historyError}
       />
     </div>
   );

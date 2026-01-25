@@ -12,7 +12,7 @@
 }
 
 .navbar-container {
-  max-width: 1400px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   display: flex;
@@ -29,7 +29,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .logo-image {
@@ -47,7 +48,7 @@
 }
 
 .navbar-center {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
 }
@@ -79,11 +80,18 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-shrink: 0;
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-end;
+}
+
+.navbar-actions-inner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   background: #1e3a8a;
   padding: 0.5rem;
   border-radius: 12px;
-  margin-left: auto;
 }
 
 .navbar-button-login {
@@ -181,6 +189,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    flex: none;
   }
   
   .navbar-center {
@@ -199,7 +208,7 @@
     font-size: 0.9rem;
   }
   
-  .navbar-actions {
+  .navbar-actions-inner {
     gap: 0.5rem;
     padding: 0.4rem;
   }
@@ -249,6 +258,7 @@
     align-items: center;
     grid-row: 1;
     grid-column: 1;
+    flex: none;
   }
   
   .logo-image {
@@ -289,14 +299,18 @@
     max-width: none;
     justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.4rem;
     margin: 0;
     display: flex;
     grid-row: 1;
     grid-column: 1;
     justify-self: end;
     align-self: center;
+    flex: none;
+  }
+  
+  .navbar-actions-inner {
+    gap: 0.5rem;
+    padding: 0.4rem;
   }
   
   .navbar-button-login,
