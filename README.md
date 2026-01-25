@@ -2,7 +2,11 @@
 
 > Turn any YouTube video into chapters, notes, and answers.
 
-A web application that automatically generates chapter markers and timestamps for YouTube videos using AI. Paste a link and get timestamps, key takeaways, and searchable moments in seconds.
+**YouStamps** is a web application that transforms any YouTube video into organized, clickable chapter markers. Users simply paste a video URL, and within seconds, the AI analyzes the content and generates timestamped chapters that can be copied directly into video descriptions or used for personal navigation.
+
+The app is built with React 19 and Firebase, featuring a Python-based Cloud Function that securely communicates with the Bumpups API for AI-powered timestamp generation. User sessions start anonymously and can be linked to email or Google accounts, while Firestore stores generation history so users can revisit past videos without re-processing them.
+
+The frontend uses noembed and YouTube oEmbed APIs to fetch video previews, displays timestamps in a two-column layout with direct links to each chapter, and includes a carousel showcasing previous generations. The entire stack is deployed on Firebase Hosting with App Check enabled for production security.
 
 ![YouStamps Screenshot](assets/screenshot.png)
 
@@ -115,29 +119,49 @@ firebase deploy --only functions
 
 ```
 my-react-app/
-├── public/                 # Static assets
+├── public/                     # Static assets served by React
+│   ├── index.html              # Main HTML template
+│   ├── manifest.json           # PWA manifest
+│   └── robots.txt              # SEO robots file
 ├── src/
-│   ├── assets/            # Images and logos
-│   ├── unAuth/            # Unauthenticated user flow
+│   ├── assets/                 # Images and logos
+│   │   ├── logo.png            # YouStamps logo
+│   │   ├── youtube.png         # Hero section image
+│   │   └── bumpup*.png         # Feature section images
+│   ├── unAuth/                 # Unauthenticated user flow
 │   │   ├── components/
-│   │   │   ├── Timestamp.comp/   # Core timestamp feature
-│   │   │   │   ├── enter.js      # URL input & video preview
-│   │   │   │   ├── times.js      # Timestamp display
-│   │   │   │   ├── history.js    # History carousel
-│   │   │   │   └── firestoreStorage.js
-│   │   │   ├── Navbar.js
-│   │   │   ├── Login.js
-│   │   │   ├── Signup.js
-│   │   │   └── ...
-│   │   └── LandingPage.js
-│   ├── App.js
-│   ├── firebase.js        # Firebase configuration
-│   └── index.js
-├── functions/
-│   ├── main.py            # Cloud Function for timestamp generation
-│   └── requirements.txt
-├── firebase.json          # Firebase configuration
-└── firestore.rules        # Firestore security rules
+│   │   │   ├── Timestamp.comp/ # Core timestamp feature
+│   │   │   │   ├── enter.js            # URL input & video preview
+│   │   │   │   ├── times.js            # Timestamp display
+│   │   │   │   ├── history.js          # History carousel
+│   │   │   │   ├── firestoreStorage.js # Firestore CRUD operations
+│   │   │   │   └── storage.js          # LocalStorage fallback
+│   │   │   ├── Navbar.js       # Navigation with auth state
+│   │   │   ├── intro.js        # Hero section
+│   │   │   ├── Bumpups.js      # Features/promo section
+│   │   │   ├── Footer.js       # Footer section
+│   │   │   ├── Login.js        # Login modal
+│   │   │   ├── Signup.js       # Signup modal
+│   │   │   ├── ForgotPassword.js
+│   │   │   └── *.css           # Component styles
+│   │   ├── LandingPage.js      # Main page container
+│   │   └── LandingPage.css
+│   ├── App.js                  # Root component with routing
+│   ├── App.css                 # Global app styles
+│   ├── firebase.js             # Firebase SDK initialization
+│   ├── index.js                # React entry point
+│   └── index.css               # Global styles
+├── functions/                  # Firebase Cloud Functions (Python)
+│   ├── main.py                 # get_timestamps callable function
+│   ├── requirements.txt        # Python dependencies (httpx, firebase-functions)
+│   └── .gitignore              # Ignores venv, __pycache__
+├── build/                      # Production build output (generated)
+├── .env                        # Environment variables (git-ignored)
+├── .firebaserc                 # Firebase project aliases
+├── firebase.json               # Firebase services configuration
+├── firestore.rules             # Firestore security rules
+├── package.json                # Node dependencies and scripts
+└── README.md
 ```
 
 ## How It Works
