@@ -80,28 +80,30 @@ function Navbar({ onOpenLogin, onOpenSignup }) {
           </ul>
         </div>
         <div className="navbar-actions">
-          {user ? (
-            <button onClick={handleLogout} className="navbar-profile-avatar" title={user.email}>
-              {user.photoURL && !imageError ? (
-                <img 
-                  src={user.photoURL} 
-                  alt={user.email} 
-                  className="navbar-avatar-image"
-                  onError={(e) => {
-                    console.error('Failed to load profile image:', user.photoURL);
-                    setImageError(true);
-                  }}
-                />
-              ) : (
-                <span className="navbar-avatar-initial">{getInitial(user.email)}</span>
-              )}
-            </button>
-          ) : (
-            <>
-              <button onClick={handleLoginClick} className="navbar-button-login">Log in</button>
-              <button onClick={handleSignupClick} className="navbar-button-contact">Sign up</button>
-            </>
-          )}
+          <div className="navbar-actions-inner">
+            {user ? (
+              <button onClick={handleLogout} className="navbar-profile-avatar" title={user.email}>
+                {user.photoURL && !imageError ? (
+                  <img 
+                    src={user.photoURL} 
+                    alt={user.email} 
+                    className="navbar-avatar-image"
+                    onError={(e) => {
+                      console.error('Failed to load profile image:', user.photoURL);
+                      setImageError(true);
+                    }}
+                  />
+                ) : (
+                  <span className="navbar-avatar-initial">{getInitial(user.email)}</span>
+                )}
+              </button>
+            ) : (
+              <>
+                <button onClick={handleLoginClick} className="navbar-button-login">Log in</button>
+                <button onClick={handleSignupClick} className="navbar-button-contact">Sign up</button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </nav>

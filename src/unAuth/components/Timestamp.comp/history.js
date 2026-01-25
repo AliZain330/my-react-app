@@ -7,7 +7,7 @@ import './history.css';
 // Add regular icons to the library
 library.add(far);
 
-function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
+function History({ historyItems, onLoadHistoryItem, newItemAdded, loading = false, error = '' }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const autoScrollIntervalRef = useRef(null);
 
@@ -60,6 +60,7 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
   }, [historyItems]);
   
   const totalRealItems = deduplicatedItems.length;
+  const shouldShowEmpty = !loading && !error && totalRealItems === 0;
   
   // Create exactly 5 placeholder items
   const placeholderItems = Array.from({ length: maxVisible }, (_, i) => ({
@@ -168,7 +169,13 @@ function History({ historyItems, onLoadHistoryItem, newItemAdded }) {
   return (
     <div className="history-component" id="history-section">
       <h3 className="history-heading">See past examples</h3>
-      {totalRealItems === 0 && (
+      {loading && (
+        <p className="history-loading">Loading history...</p>
+      )}
+      {error && (
+        <p className="history-error">{error}</p>
+      )}
+      {shouldShowEmpty && (
         <p className="history-empty">
           No history yet. Generate timestamps to see videos here.
         </p>

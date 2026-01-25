@@ -15,7 +15,25 @@ import {
 } from 'firebase/firestore';
 
 const COLLECTION_NAME = 'timestamp_history';
-const MAX_HISTORY_ITEMS = 100;
+const MAX_HISTORY_ITEMS = null;
+
+const normalizeHistory = (querySnapshot) => {
+  const history = [];
+
+  querySnapshot.forEach((docSnapshot) => {
+    const data = docSnapshot.data();
+    history.push({
+      id: docSnapshot.id,
+      timestamps: data.timestamps || [],
+      videoData: data.videoData || null,
+      timestampData: data.timestampData || null,
+      // Convert Firestore Timestamp to ISO string
+      date: data.createdAt?.toDate?.()?.toISOString() || data.date || new Date().toISOString()
+    });
+  });
+
+  return history;
+};
 
 /**
  * Save history item to Firestore
@@ -57,30 +75,33 @@ export const loadFromFirestore = async () => {
   }
   
   try {
-    const q = query(
-      collection(db, COLLECTION_NAME),
-      orderBy('createdAt', 'desc'),
-      limit(MAX_HISTORY_ITEMS)
-    );
-    
+    const constraints = [orderBy('createdAt', 'desc')];
+    if (MAX_HISTORY_ITEMS) {
+      constraints.push(limit(MAX_HISTORY_ITEMS));
+    }
+    const q = query(collection(db, COLLECTION_NAME), ...constraints);
     const querySnapshot = await getDocs(q);
-    const history = [];
-    
-    querySnapshot.forEach((docSnapshot) => {
-      const data = docSnapshot.data();
-      history.push({
-        id: docSnapshot.id,
-        timestamps: data.timestamps || [],
-        videoData: data.videoData || null,
-        timestampData: data.timestampData || null,
-        // Convert Firestore Timestamp to ISO string
-        date: data.createdAt?.toDate?.()?.toISOString() || data.date || new Date().toISOString()
-      });
-    });
-    
+    const history = normalizeHistory(querySnapshot);
+
     console.log(`✅ Loaded ${history.length} items from Firestore`);
     return history;
   } catch (error) {
+    const errorCode = error?.code || '';
+    const canFallback = errorCode === 'failed-precondition' || errorCode === 'invalid-argument';
+
+    if (canFallback) {
+      try {
+        const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
+        const history = normalizeHistory(querySnapshot);
+        history.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        console.log(`✅ Loaded ${history.length} items from Firestore (fallback)`);
+        return history;
+      } catch (fallbackError) {
+        console.error('❌ Error loading from Firestore (fallback):', fallbackError);
+        return [];
+      }
+    }
+
     console.error('❌ Error loading from Firestore:', error);
     // Return empty array on error instead of throwing
     return [];

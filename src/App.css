@@ -6,6 +6,16 @@
   min-height: 100vh;
   width: 100%;
   background: linear-gradient(135deg, #808080 0%, #606060 50%, #404040 100%);
+  zoom: 0.8;
+}
+
+@supports not (zoom: 1) {
+  .App {
+    transform: scale(0.8);
+    transform-origin: top center;
+    width: 125%;
+    min-height: 125vh;
+  }
 }
 
 .App-logo {
